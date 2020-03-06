@@ -12,14 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Enter text"
-        android:inputType="textPersonName"/>
+        android:hint="@string/enter_text"
+        android:inputType="textPersonName"
+        android:importantForAutofill="no"/>
 
     <Button
         android:id="@+id/modulateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Execute Modem" />
+        android:text="@string/execute_modem" />
 
     <TextView
         android:id="@+id/resultTextValue"
@@ -31,5 +32,5 @@
         android:id="@+id/modeValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NRZ-I" />
+        android:text="@string/nrz_i" />
 </LinearLayout>
