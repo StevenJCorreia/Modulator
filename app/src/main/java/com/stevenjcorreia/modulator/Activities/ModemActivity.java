@@ -52,14 +52,13 @@ public class ModemActivity extends AppCompatActivity {
                 if (!resultTextValue.getText().toString().isEmpty())
                     resultTextValue.setText("");
 
-                Thread thread = new Thread(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
                         // Set textview to result value
                         resultTextValue.setText(Modem.execute(originalTextValue.getText().toString(), modeValue.isChecked() ? Modem.MANCHESTER_IEEE : Modem.NRZ_I));
                     }
-                });
-                thread.start();
+                }).start();
             }
         });
     }

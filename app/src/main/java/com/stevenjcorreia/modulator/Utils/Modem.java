@@ -7,7 +7,7 @@ import java.util.Locale;
 * This module converts characters to binary using UTF-8.
 * This module uses even parity.
 * */
-// TODO - Add delimiters & parity bit to Manchester
+// TODO - Add delimiters to Manchester
 public class Modem {
     private static final String TAG = "Modem";
 
@@ -41,7 +41,7 @@ public class Modem {
 
         switch (mode) {
             case NRZ_I:
-                for (int i = 0; i < output.length; i++) { // Each character's binary string
+                for (int i = 0; i < output.length; i++) { // Each character as binary string
                     for (int j = 0; j < String.valueOf(bytes[i]).length(); j++) { // Each character's binary string char-element
                         if (j == 0) {
                             // If first bit, set starting voltage to appropriate voltage (0 = high, 1 = low)
