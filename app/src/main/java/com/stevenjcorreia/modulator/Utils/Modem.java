@@ -1,14 +1,11 @@
 package com.stevenjcorreia.modulator.Utils;
 
-
 import android.util.Log;
-
 import java.util.Locale;
 
 /*
 * This module converts characters to binary using UTF-8.
 * */
-// TODO - Add parity bit to NRZ-I
 // TODO - Add delimiters & parity bit to Manchester
 public class Modem {
     private static final String TAG = "Modem";

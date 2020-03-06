@@ -1,7 +1,8 @@
-package com.stevenjcorreia.modulator;
+package com.stevenjcorreia.modulator.Activities;
 
+import com.stevenjcorreia.modulator.R;
+import com.stevenjcorreia.modulator.Utils.Modem;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +16,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
-import com.stevenjcorreia.modulator.Utils.Modem;
-
-public class MainActivity extends AppCompatActivity {
+public class ModemActivity extends AppCompatActivity {
     Context context = this;
 
     EditText originalTextValue;
@@ -40,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         modeValue.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                modeValue.setText(isChecked ? "Manchester (IEEE)" : "NRZ-I");
+                modeValue.setText(isChecked ? getResources().getString(R.string.manchester) : getResources().getString(R.string.nrz_i));
+
                 originalTextValue.setText("");
                 resultTextValue.setText("");
             }

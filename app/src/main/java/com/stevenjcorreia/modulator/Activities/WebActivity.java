@@ -1,8 +1,7 @@
-package com.stevenjcorreia.modulator;
+package com.stevenjcorreia.modulator.Activities;
 
+import com.stevenjcorreia.modulator.R;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
