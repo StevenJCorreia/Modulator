@@ -7,7 +7,6 @@ import java.util.Locale;
 * This module converts characters to binary using UTF-8.
 * This module uses even parity.
 * */
-// TODO - Add delimiter bits to Manchester mode
 public class Modem {
     private static final String TAG = "Modem";
     private static int mode = -1;
@@ -25,7 +24,7 @@ public class Modem {
         int[] bytes = AsciiStringToBinaryArray(text);
 
         // Modulate voltages
-        float[][] voltages = Modulate(bytes);
+        float[][] voltages = modulate(bytes);
 
         // Demodulate voltages
         bytes = demodulate(voltages);
@@ -34,7 +33,7 @@ public class Modem {
         return binaryArrayToAsciiString(bytes);
     }
 
-    private static float[][] Modulate(int[] bytes) {
+    private static float[][] modulate(int[] bytes) {
         float[][] output = new float[bytes.length][];
 
         // Initialize sub-arrays
