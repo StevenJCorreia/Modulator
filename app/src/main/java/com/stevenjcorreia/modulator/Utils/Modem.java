@@ -2,6 +2,9 @@ package com.stevenjcorreia.modulator.Utils;
 
 import android.util.Log;
 import java.util.Locale;
+import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Modem {
     private static final String TAG = "Modem";
@@ -13,20 +16,42 @@ public class Modem {
     private static final float LOW_VOLTAGE = .2f;
     private static final float HIGH_VOLTAGE = 5f;
 
-    public static String execute(String text, int mode) {
+    public static String execute(String message, int mode) {
         Modem.mode = mode;
 
-        // Text -> ASCII -> binary
-        int[] bytes = AsciiStringToBinaryArray(text);
+        final int mid = message.length() / 2;
+        final String[] parts = {message.substring(0, mid), message.substring(mid)};
+        final Vector<String> decodedParts = new Vector<>();
 
-        // Modulate voltages
-        float[][] voltages = modulate(bytes);
+        for (final String part: parts) {
+            Thread modemThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // Text -> ASCII -> binary
+                    int[] bytes = AsciiStringToBinaryArray(part);
 
-        // Demodulate voltages
-        bytes = demodulate(voltages);
+                    // Modulate voltages
+                    float[][] voltages = modulate(bytes);
 
-        // Binary -> ASCII -> text
-        return binaryArrayToAsciiString(bytes);
+                    // Demodulate voltages
+                    bytes = demodulate(voltages);
+
+                    // Binary -> ASCII -> text
+                    decodedParts.add(binaryArrayToAsciiString(bytes));
+                }
+            });
+
+            modemThread.start();
+            try { modemThread.join(); } catch (InterruptedException e) { Log.e(TAG, e.toString()); }
+        }
+
+        // Re-append elements together
+        StringBuilder output = new StringBuilder();
+        for (String part: decodedParts) {
+            output.append(part);
+        }
+
+        return output.toString();
     }
 
     private static float[][] modulate(int[] bytes) {
