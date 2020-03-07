@@ -7,9 +7,10 @@ import java.util.Locale;
 * This module converts characters to binary using UTF-8.
 * This module uses even parity.
 * */
-// TODO - Add delimiters to Manchester
+// TODO - Add delimiter bits to Manchester mode
 public class Modem {
     private static final String TAG = "Modem";
+    private static int mode = -1;
 
     public static final int NRZ_I = 0;
     public static final int MANCHESTER_IEEE = 1;
@@ -18,20 +19,22 @@ public class Modem {
     private static final float HIGH_VOLTAGE = 5f;
 
     public static String execute(String text, int mode) {
+        Modem.mode = mode;
+
         // Text -> ASCII -> binary
         int[] bytes = AsciiStringToBinaryArray(text);
 
         // Modulate voltages
-        float[][] voltages = Modulate(bytes, mode);
+        float[][] voltages = Modulate(bytes);
 
         // Demodulate voltages
         bytes = demodulate(voltages);
 
-        // Binary to ASCII -> text
+        // Binary -> ASCII -> text
         return binaryArrayToAsciiString(bytes);
     }
 
-    private static float[][] Modulate(int[] bytes, int mode) {
+    private static float[][] Modulate(int[] bytes) {
         float[][] output = new float[bytes.length][];
 
         // Initialize sub-arrays
@@ -57,7 +60,16 @@ public class Modem {
                 }
                 break;
             case MANCHESTER_IEEE:
-                // ...
+                for (int i = 0; i < output.length; i++) { // Each character as binary string
+                    int expectedBits = String.valueOf(bytes[i]).length();
+                    int receivedBits = 0;
+                    while (receivedBits < expectedBits) {
+                        output[i][receivedBits] = String.valueOf(bytes[i]).charAt(receivedBits) == '1' ? HIGH_VOLTAGE : LOW_VOLTAGE;
+                        Log.d(TAG, String.format(Locale.US, "bit %s receives voltage of %f.", String.valueOf(bytes[i]).charAt(receivedBits), output[i][receivedBits]));
+
+                        receivedBits++;
+                    }
+                }
                 break;
         }
 
@@ -67,23 +79,42 @@ public class Modem {
     private static int[] demodulate(float[][] voltages) {
         int[] output = new int[voltages.length];
 
-        // For every voltage in every sub-array, append 0 or 1 to string, convert to int, add to respective index
-        for (int i = 0; i < voltages.length; i++) {
-            StringBuilder byteValue = new StringBuilder();
-            for (int j = 0; j < voltages[i].length; j++) {
-                if (j == 0) {
-                    // If first voltage, set starting bit to appropriate voltage (high = 0, low = 1)
-                    byteValue.append(Float.compare(voltages[i][j], HIGH_VOLTAGE) == 0 ? 0 : 1);
-                    Log.d(TAG, String.format(Locale.US, "voltage of %f receives bit %s.", voltages[i][j], byteValue));
-                    continue;
+        switch (mode) {
+            case NRZ_I:
+                // For every voltage in every sub-array, append 0 or 1 to string, convert to int, add to respective index
+                for (int i = 0; i < voltages.length; i++) {
+                    StringBuilder byteValue = new StringBuilder();
+                    for (int j = 0; j < voltages[i].length; j++) {
+                        if (j == 0) {
+                            // If first voltage, set starting bit to appropriate voltage (high = 0, low = 1)
+                            byteValue.append(Float.compare(voltages[i][j], HIGH_VOLTAGE) == 0 ? 0 : 1);
+                            Log.d(TAG, String.format(Locale.US, "voltage of %f receives bit %s.", voltages[i][j], byteValue));
+                            continue;
+                        }
+
+                        // Setting bit to 1 if current and previous voltages are different
+                        byteValue.append(Float.compare(voltages[i][j], voltages[i][j - 1]) == 0 ? 0 : 1);
+                        Log.d(TAG, String.format(Locale.US, "voltage of %f receives bit %s.", voltages[i][j], byteValue.charAt(j)));
+                    }
+
+                    output[i] = Integer.parseInt(byteValue.toString());
                 }
+                break;
+            case MANCHESTER_IEEE:
+                for (int i = 0; i < output.length; i++) { // Each character as binary string
+                    StringBuilder byteValue = new StringBuilder();
+                    int expectedBits = voltages[i].length;
+                    int receivedBits = 0;
+                    while (receivedBits < expectedBits) {
+                        byteValue.append(Float.compare(voltages[i][receivedBits], HIGH_VOLTAGE) == 0 ? 1 : 0);
+                        Log.d(TAG, String.format(Locale.US, "voltage of %f receives bit %s.", voltages[i][receivedBits], byteValue.charAt(receivedBits)));
 
-                // Setting bit to 1 if current and previous voltages are different
-                byteValue.append(Float.compare(voltages[i][j], voltages[i][j - 1]) == 0 ? 0 : 1);
-                Log.d(TAG, String.format(Locale.US, "voltage of %f receives bit %s.", voltages[i][j], output[i]));
-            }
+                        receivedBits++;
+                    }
 
-            output[i] = Integer.parseInt(byteValue.toString());
+                    output[i] = Integer.parseInt(byteValue.toString());
+                }
+                break;
         }
 
         return output;
@@ -102,6 +133,16 @@ public class Modem {
         return output;
     }
 
+    private static String binaryArrayToAsciiString(int[] bytes) {
+        char[] ASCII = new char[bytes.length];
+
+        for (int i = 0; i < ASCII.length; i++) {
+            ASCII[i] = (char) Integer.parseInt(stripParityBit(String.valueOf(bytes[i])), 2);
+        }
+
+        return String.valueOf(ASCII);
+    }
+
     private static String setParityBit(String byteValue) {
         int onBitCount = 0;
         for (int i = 0; i < byteValue.length(); i++) {
@@ -111,15 +152,6 @@ public class Modem {
         }
 
         return byteValue.concat((onBitCount & 1) == 0 ? "0" : "1");
-    }
-
-    private static String binaryArrayToAsciiString(int[] bytes) {
-        char[] ASCII = new char[bytes.length];
-        for (int i = 0; i < ASCII.length; i++) {
-            ASCII[i] = (char) Integer.parseInt(stripParityBit(String.valueOf(bytes[i])), 2);
-        }
-
-        return String.valueOf(ASCII);
     }
 
     private static String stripParityBit(String byteValue) {
