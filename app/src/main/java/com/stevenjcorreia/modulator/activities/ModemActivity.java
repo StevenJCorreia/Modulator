@@ -44,16 +44,8 @@ public class ModemActivity extends AppCompatActivity {
         modulateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!resultTextValue.getText().toString().isEmpty())
-                    resultTextValue.setText("");
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Set TextView to result value
-                        resultTextValue.setText(Modem.execute(originalTextValue.getText().toString(), modeValue.isChecked() ? Modem.MANCHESTER_IEEE : Modem.NRZ_I));
-                    }
-                }).start();
+                // Set TextView to result value
+                resultTextValue.setText(Modem.execute(originalTextValue.getText().toString(), modeValue.isChecked() ? Modem.MANCHESTER_IEEE : Modem.NRZ_I));
             }
         });
     }
