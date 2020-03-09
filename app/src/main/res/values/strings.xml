@@ -4,7 +4,6 @@
     <string name="manchester">Manchester (IEEE)</string>
     <string name="execute_modem">Execute Modem</string>
     <string name="nrz_i">NRZ-I</string>
-    <string name="view_logs">View Logs</string>
     <string name="about_app">About App</string>
     <string name="about_developer">About Developer</string>
     <string name="repo_link">https://github.com/StevenJCorreia/Modulator</string>

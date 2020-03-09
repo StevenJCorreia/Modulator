@@ -1,4 +1,4 @@
-package com.stevenjcorreia.modulator.Utils;
+package com.stevenjcorreia.modulator.utils;
 
 import android.util.Log;
 import java.util.Locale;
