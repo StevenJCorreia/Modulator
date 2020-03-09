@@ -1,7 +1,7 @@
-package com.stevenjcorreia.modulator.Activities;
+package com.stevenjcorreia.modulator.activities;
 
 import com.stevenjcorreia.modulator.R;
-import com.stevenjcorreia.modulator.Utils.Modem;
+import com.stevenjcorreia.modulator.utils.Modem;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
 public class ModemActivity extends AppCompatActivity {
-    Context context = this;
-
-    EditText originalTextValue;
-    TextView resultTextValue;
-    Button modulateButton;
-    Switch modeValue;
+    private final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +26,10 @@ public class ModemActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        originalTextValue = findViewById(R.id.originalTextValue);
-        resultTextValue = findViewById(R.id.resultTextValue);
-        modulateButton = findViewById(R.id.modulateButton);
-        modeValue = findViewById(R.id.modeValue);
+        final EditText originalTextValue = findViewById(R.id.originalTextValue);
+        final TextView resultTextValue = findViewById(R.id.resultTextValue);
+        Button modulateButton = findViewById(R.id.modulateButton);
+        final Switch modeValue = findViewById(R.id.modeValue);
 
         modeValue.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -55,7 +50,7 @@ public class ModemActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        // Set textview to result value
+                        // Set TextView to result value
                         resultTextValue.setText(Modem.execute(originalTextValue.getText().toString(), modeValue.isChecked() ? Modem.MANCHESTER_IEEE : Modem.NRZ_I));
                     }
                 }).start();
