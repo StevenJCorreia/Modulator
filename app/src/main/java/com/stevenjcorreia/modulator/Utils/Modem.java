@@ -3,8 +3,6 @@ package com.stevenjcorreia.modulator.Utils;
 import android.util.Log;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Modem {
     private static final String TAG = "Modem";
